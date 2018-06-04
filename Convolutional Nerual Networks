@@ -41,15 +41,15 @@ test_loader = torch.utils.data.DataLoader(dataset=test_dataset,
 ##**** The Main Part
 ##**** Convolutional Neural Network (2 layers)
 
-############################################################################ 
-##             How to calculate the output size of each layer             ##
-##  In Conv Step:                                                         ##
-##  Output_C = (Input_Size + 2 * Padding_Size - Kernel_Size)/Stride_Size  ##
-##  In Pooling Step:                                                      ##
-##  Output_Size = (Input_Size/Stride_Size)                                ##
-##  Tips:                                                                 ##
-##  In Calculation: Output_C is down integer; Output_Size is up integer   ##
-############################################################################
+#################################################################################
+##             How to calculate the output size of each layer                  ##
+##   In Conv Step:                                                             ##
+##   Output_C = [(Input_Size + 2 * Padding_Size - Kernel_Size)/Stride_Size] +1 ##
+##   In Pooling Step:                                                          ##
+##   Output_Size = (Input_Size/Stride_Size)                                    ##
+##   Tips:                                                                     ##
+##   In Calculation: Output_C is down integer; Output_Size is up integer       ##
+#################################################################################
 
 class ConvNet(nn.Module):
     ## Initialize the Conv Layers
