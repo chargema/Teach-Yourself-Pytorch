@@ -1,1 +1,84 @@
 
+import torch 
+import torch.nn as nn
+import torchvision
+import torchvision.transforms as transforms
+
+##########################################################################
+#            Convolutional Neural Network for MNIST                      #
+##########################################################################
+
+# Device configuration
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+
+# Hyper parameters
+num_epochs = 5
+num_classes = 10
+batch_size =  100
+learning_rate = 0.001
+
+# MNIST dataset
+train_dataset = torchvision.datasets.MNIST(root='D:/Joshua/self_train/MNIST',
+                                           train=True,
+                                           transform=transforms.ToTensor(),
+                                           download=True)
+
+test_dataset = torchvision.datasets.MNIST(root='D:/Joshua/self_train/MNIST',
+                                          train=False,
+                                          transform=transforms.ToTensor())
+                                          
+# Data loader
+train_loader = torch.utils.data.DataLoader(dataset=train_dataset,
+                                           batch_size=batch_size,
+                                           shuffle=True)
+
+test_loader = torch.utils.data.DataLoader(dataset=test_dataset,
+                                          batch_size=batch_size,
+                                          shuffle=False)
+                                          
+                                          
+                                          
+##**** The Main Part
+##**** Convolutional Neural Network (2 layers)
+
+############################################################################ 
+##             How to calculate the output size of each layer             ##
+##  In Conv Step:                                                         ##
+##  Output_C = (Input_Size + 2 * Padding_Size - Kernel_Size)/Stride_Size  ##
+##  In Pooling Step:                                                      ##
+##  Output_Size = (Input_Size/Stride_Size)                                ##
+##  Tips:                                                                 ##
+##  In Calculation: Output_C is down integer; Output_Size is up integer   ##
+############################################################################
+
+class ConvNet(nn.Module):
+    ## Initialize the Conv Layers
+    def __init__(self):
+        super(ConvNet,self).__init__()
+        
+        self.layer1 = nn.Sequential(
+            nn.Conv2d(1,16,kernel_size=5,stride=1,padding=2),
+            nn.BatchNorm2d(16),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2,stride=2))
+        
+        self.layer2 = nn.Sequential(
+            nn.Conv2d(16,32,kernel_size=5,stride=1,padding=2),
+            nn.BatchNorm2d(32),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2,stride=2))
+        
+        self.fc = nn.Linear(7*7*32,num_classes)
+        
+    
+    ##  Do the Forward-Feed to predict the Model, where x is the actual input
+    def forward(self,x):
+        out = self.layer1(x)
+        out = self.layer2(x)
+        out = out.view(out.size(0), -1)
+        out = self.fc(out)
+        return out           
+        
+        
+model = ConvNet().to(device)
+print(model)
